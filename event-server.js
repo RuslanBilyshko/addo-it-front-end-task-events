@@ -10,7 +10,6 @@ var EventStorage = [];
  */
 var currDate = new Date();
 
-currDate.toLocaleString();
 /**
  * События, присланные сервером
  * @type {*[]}
@@ -63,7 +62,6 @@ var events = [
 /**
  * Форматирование вывода даты
  * @param date
- * @param format
  */
 function dateFormat(date)
 {
@@ -118,10 +116,7 @@ addEventsToStorage(events);
  */
 function hasEvent(id) {
 
-    if (EventStorage.hasOwnProperty(id))
-        return true;
-
-    return false;
+    return !!EventStorage.hasOwnProperty(id);
 }
 
 /**
