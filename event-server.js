@@ -1,3 +1,7 @@
+const BEFORE_EVENT = -1;
+const CURR_EVENT = 1;
+const AFTER_EVENT = 2;
+
 /**
  * Хранилище событий
  * @type {Array}
@@ -39,8 +43,8 @@ var events = [
     {
         id: 4,
         name: "Праздник Масеницы",
-        dateStart: new Date(2017, 1, 1, 12, 0),
-        dateEnd: new Date(2017, 1, 1, 17, 0),
+        dateStart: new Date(2017, 1, 26, 12, 0),
+        dateEnd: new Date(2017, 1, 26, 17, 0),
         location: "Театральная площадь"
     },
     {
@@ -132,53 +136,28 @@ function getEvent(id)
     return {};
 }
 
-//Была идея реализовать следующие 3 функции с помощю 1 и параметра-флага
-//но показалось что код будет слишком громосткий
-//
-
 /**
- * Получение списка прошедших событий
- * @return array
+ * Фильтрация событий Прошедшие | Текущие | Будущие
+ * @param flag: -1 | 1 | 2
+ * @returns {Array.<object>}
  */
-function getBeforeEvents() {
-    var result = [];
+function eventFilter(flag)
+{
+    //Сдесь почему-то не завелся параметр по-умолчанию
+    if(!flag) flag = AFTER_EVENT;
 
-    EventStorage.forEach(function (item) {
-        if (item.dateEnd.getTime() < currDate.getTime())
-            result.push(item);
+    return EventStorage.filter(function(item){
+
+        if(flag == BEFORE_EVENT)
+            return item.dateEnd.getTime() < currDate.getTime();
+
+        if(flag == CURR_EVENT)
+            return item.dateStart.getTime() < currDate && item.dateEnd.getTime() >= currDate;
+
+        if(flag == AFTER_EVENT)
+            return item.dateStart.getTime() > currDate;
+
     });
-
-    return result;
-}
-
-/**
- * Получение списка текущих событий
- * @return array
- */
-function getCurrentEvents() {
-    var result = [];
-
-    EventStorage.forEach(function (item) {
-        if (item.dateStart.getTime() < currDate && item.dateEnd.getTime() >= currDate)
-            result.push(item);
-    });
-
-    return result;
-}
-
-/**
- * Получение списка событий в будущем
- * @return array
- */
-function getAfterEvents() {
-    var result = [];
-
-    EventStorage.forEach(function (item) {
-        if (item.dateStart.getTime() > currDate)
-            result.push(item);
-    });
-
-    return result;
 }
 
 
@@ -203,12 +182,11 @@ function eventToString(event)
  */
 function eventListing()
 {
-    var result = [];
-    EventStorage.forEach(function(item){
-        result.push(eventToString(item));
+    //var result = [];
+    return EventStorage.map(function(item) {
+        return eventToString(item);
     });
-
-    return result;
+    //return result;
 }
 
 //Текущая дата
@@ -225,15 +203,15 @@ console.log(getEvent(222));
 
 console.log("Прошедшие события");
 console.log("----------------------------------------------");
-console.log(getBeforeEvents());
+console.log(eventFilter(BEFORE_EVENT));
 
 console.log("Текущие события");
 console.log("----------------------------------------------");
-console.log(getCurrentEvents());
+console.log(eventFilter(CURR_EVENT));
 
 console.log("Будущие события");
 console.log("----------------------------------------------");
-console.log(getAfterEvents());
+console.log(eventFilter());
 
 console.log("Листинг событий");
 console.log("----------------------------------------------");
